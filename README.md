@@ -106,6 +106,7 @@ js/db.js            camada de dados (localStorage e IndexedDB)
 js/agenda.js        feriados, datas comerciais e aniversários
 js/cargos.js        cargos, fluxograma geral, abas por cargo e dashboard
 js/app.js           as telas
+js/admin.js         tela Admin (tempos, gargalos e responsáveis; só lê os dados). Nomes reais da equipe em EQUIPE
 ```
 
 Para mudar um item do checklist, edite `js/fases.js`. Para rodar na sua máquina:

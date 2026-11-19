@@ -627,3 +627,10 @@ body { color: #333; }
   .fase-corpo { display: block !important; }
   .cartao, .fase-bloco { box-shadow: none; page-break-inside: avoid; }
 }
+
+/* checklist de recebimento */
+.tabela-rec td { vertical-align: top; }
+.tabela-rec tr.grupo-rec td { background: var(--fundo-fraco, #f4f5f8); }
+.tabela-rec .obs-rec { width: 100%; border: 1px solid var(--borda); border-radius: 6px; padding: 5px 7px;
+  font: inherit; font-size: 12.5px; background: transparent; color: inherit; }
+.tabela-rec .nowrap { white-space: nowrap; }

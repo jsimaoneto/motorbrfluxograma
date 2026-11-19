@@ -412,7 +412,9 @@ function telaVeiculo() {
     `<button class="btn" onclick="estado.dash='v:${v.id}';ir('dashboard')">${ic.grafico} Dashboard</button>
      <button class="btn" onclick="ir('veiculos')">${ic.volta} Voltar</button>`);
 
-  const abas = [['dados', 'Ficha'], ['checklist', `Checklist (${p.feitos}/${p.total})`], ['fotos', 'Fotos'], ['notas', 'Anotações']];
+  const rec = resumoRec(v);
+  const abas = [['dados', 'Ficha'], ['recebimento', `Recebimento (${rec.avaliados}/${rec.total})`],
+    ['checklist', `Checklist (${p.feitos}/${p.total})`], ['fotos', 'Fotos'], ['notas', 'Anotações']];
   $('#pagina').innerHTML = `
     <div class="cartao" style="margin-bottom:18px">
       <div class="cartao-corpo" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
@@ -432,7 +434,7 @@ function telaVeiculo() {
       `<button class="${estado.aba === id ? 'ativo' : ''}" onclick="ir('veiculo',{aba:'${id}'})">${nome}</button>`).join('')}</div>
     <div id="conteudo-aba"></div>`;
 
-  ({ dados: abaDados, checklist: abaChecklist, fotos: abaFotos, notas: abaNotas }[estado.aba] || abaDados)(v);
+  ({ dados: abaDados, recebimento: abaRecebimento, checklist: abaChecklist, fotos: abaFotos, notas: abaNotas }[estado.aba] || abaDados)(v);
 }
 
 function campo(rotulo, chave, valor, tipo, opcoes) {
@@ -539,6 +541,21 @@ function abaDados(v) {
     <button class="btn perigo" onclick="apagarVeiculo('${v.id}')">Excluir este veículo</button>`;
 
   ligarCampos(v, (obj) => { salvarVeiculo(obj); avisar('Salvo'); });
+
+  // o carro só sai do pátio com o nome de quem autorizou (pedido do CEO em 19/11/2026)
+  const sl = $('[data-c="local"]', $('#conteudo-aba'));
+  if (sl) sl.onchange = (e) => {
+    const novo = e.target.value;
+    if (LOCAIS_FORA.includes(novo) && !(v.localPor || '').trim()) {
+      e.target.value = localDoV(v);
+      avisar('Preencha quem autorizou a saída antes de marcar o veículo fora da loja.');
+      const p = $('[data-c="localPor"]', $('#conteudo-aba'));
+      if (p) p.focus();
+      return;
+    }
+    v.local = novo; v.localDesde = hoje();
+    salvarVeiculo(v); avisar('Salvo'); telaVeiculo();
+  };
 }
 
 function apagarVeiculo(id) {

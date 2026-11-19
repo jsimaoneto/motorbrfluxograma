@@ -18,7 +18,7 @@ const FASES = [
     passa: 'Procedência conferida, documentação regular, veículo no CRM e, se consignado, contrato estimatório assinado.',
     grupos: [
       { t: 'Usado comprado para estoque (inclui o usado recebido na troca)', itens: [
-        { i: 'Avaliar o veículo com o checklist de recebimento: lataria, vidros, pneus, interior, painel, test drive técnico e leitura de falhas (scanner)', q: 'Consultor', o: 'U' },
+        { i: 'Avaliar o veículo com o checklist de recebimento: lataria, vidros, pneus, interior, painel, test drive técnico e leitura de falhas (scanner)', q: 'Motorista / Consultor', o: 'U' },
         { i: 'Consultar a procedência antes da proposta: IPVA, licenciamento, multas, restrições (judicial, administrativa, roubo e furto), gravame, leilão, sinistro e recall; laudo cautelar', q: 'Financiamento e Doc.', o: 'U' },
         { i: 'Precificar: referência de mercado, custo estimado de preparação e margem; proposta acima da alçada vai ao CEO', q: 'Consultor / CEO', o: 'U' },
         { i: 'Identificar o vendedor e a origem dos recursos; pagamento por terceiro, fracionado ou em espécie acima de R$ 30.000 vai à Diretoria (COAF)', q: 'Financiamento e Doc.', o: 'U' },

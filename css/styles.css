@@ -366,6 +366,14 @@ textarea { resize: vertical; min-height: 72px; line-height: 1.55; }
 .tarefa-veiculo .tv-cab .fraco { font-size: 12px; }
 
 /* ------------------------------------------------------------------ dashboard */
+.clicavel { cursor: pointer; transition: transform .12s, box-shadow .12s, opacity .12s; }
+.indicador.clicavel:hover, .pr-item.clicavel:hover { border-color: var(--laranja); box-shadow: var(--sombra-forte); }
+.pr-item.clicavel { border-radius: var(--raio-p); padding-left: 6px; padding-right: 6px; }
+.pr-item.clicavel:hover { background: var(--laranja-claro); }
+.rosca.clicavel:hover, .fx.clicavel:hover { transform: scale(1.06); }
+.bh.clicavel { border-radius: var(--raio-p); padding: 6px 8px; margin: 0 -8px 8px; }
+.bh.clicavel:hover { background: var(--laranja-claro); }
+.col.clicavel:hover i { background: var(--laranja-escuro); }
 .dash-topo { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; margin-bottom: 18px; align-items: start; }
 .dash-roscas .cartao-corpo { display: flex; justify-content: space-around; gap: 10px; flex-wrap: wrap; }
 .dash-kpis { margin-bottom: 0; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }

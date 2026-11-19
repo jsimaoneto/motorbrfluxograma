@@ -184,7 +184,7 @@ function abaCargo(c) {
     const lista = itensProcesso(v.origem).filter((x) => x.cargos.includes(c.id));
     const fa = faseAtual(v);
     tarefas = lista.length ? FASES.filter((f) => lista.some((x) => x.f.n === f.n)).map((f) => `
-      <div class="sub-grupo">${f.n}. ${esc(f.t)}${f.n === fa ? ' · fase atual' : ''}</div>
+      <div class="sub-grupo" data-cf="${f.n}">${f.n}. ${esc(f.t)}${f.n === fa ? ' · fase atual' : ''}</div>
       ${lista.filter((x) => x.f.n === f.n).map((x) => itemHtml(v, x)).join('')}`).join('')
       : '<p class="fraco">Este cargo não tem itens para este veículo.</p>';
   } else {
@@ -248,33 +248,109 @@ function abaCargo(c) {
     </div>`;
 }
 
+// ---------------------------------------------------------------- navegação a partir do dashboard
+// abre o checklist do veículo com as fases pedidas abertas e rola até a primeira
+function irChecklist(vid, fases) {
+  estado.fasesAbertas = new Set(fases);
+  ir('veiculo', { veiculoId: vid, aba: 'checklist' });
+  rolarAte(`[data-fase="${fases[0]}"]`);
+}
+// abre a aba do cargo filtrada no veículo (vid vazio: tarefas de agora de todos) e rola até a fase
+function irCargo(cargoId, vid, fase) {
+  estado.cargoVeiculo = vid || '';
+  ir('fluxogramas', { cargo: cargoId });
+  if (fase) rolarAte(`[data-cf="${fase}"]`);
+}
+function rolarAte(sel) {
+  setTimeout(() => { const el = $(sel); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 60);
+}
+
+// com um veículo vai direto; com vários (cliente ou loja) pergunta qual
+function escolherVeiculo(titulo, resumo, acao, extra) {
+  const vs = (estado.dashVs || []).map(acharVeiculo).filter(Boolean);
+  if (vs.length === 1) return acao(vs[0].id);
+  abrirModal(titulo, `<p class="fraco" style="font-size:12.5px;margin-bottom:10px">Escolha o veículo para abrir o fluxograma.</p>
+    <div class="lista-proximos">${vs.map((v) => `<div class="pr-item clicavel" data-esc="${v.id}">
+      <div class="pr-texto"><div class="t">${esc(nomeVeiculo(v))}${v.placa ? ' · ' + esc(v.placa) : ''}</div><div class="s">${resumo(v)}</div></div></div>`).join('')}</div>`,
+    [{ texto: 'Fechar', acao: fecharModal }].concat(extra ? [extra] : []));
+  $$('[data-esc]').forEach((el) => { el.onclick = () => { fecharModal(); acao(el.dataset.esc); }; });
+}
+
+function abrirFase(n) {
+  const f = FASES[n - 1];
+  escolherVeiculo(`Fase ${n}: ${f.t}`, (v) => {
+    const p = contar([v], (x) => x.f.n === n);
+    return `${p.feitos} de ${p.total} itens feitos${faseAtual(v) === n ? ' · fase atual' : ''}`;
+  }, (vid) => irChecklist(vid, [n]));
+}
+
+function abrirJornada(j) {
+  const fases = FASES.filter((f) => !j || f.jornada === j).map((f) => f.n);
+  escolherVeiculo(j === 'cliente' ? 'Jornada do cliente' : j === 'veiculo' ? 'Jornada do veículo' : 'Processo inteiro', (v) => {
+    const p = contar([v], (x) => fases.includes(x.f.n));
+    return `${p.feitos} de ${p.total} itens feitos · fase atual ${faseAtual(v)}`;
+  }, (vid) => {
+    const v = acharVeiculo(vid);
+    const fa = faseAtual(v);
+    irChecklist(vid, fases.includes(fa) ? [fa] : [fases[0]]);
+  });
+}
+
+function abrirCargo(cargoId, fase) {
+  const c = acharCargo(cargoId);
+  escolherVeiculo(c.nome + (fase ? ` · fase ${fase}` : ''), (v) => {
+    const p = contar([v], (x) => x.cargos.includes(cargoId) && (!fase || x.f.n === fase));
+    const agora = pendentesAgora(v, cargoId).length;
+    return `${p.feitos} de ${p.total} itens feitos${agora ? ` · <b style="color:var(--laranja-escuro)">${agora} agora</b>` : ''}`;
+  }, (vid) => irCargo(cargoId, vid, fase),
+  { texto: 'Tarefas de agora de todos', classe: 'principal', acao: () => { fecharModal(); irCargo(cargoId, '', 0); } });
+}
+
+// o que foi concluído num dia, com atalho para cada item
+function verDia(data) {
+  const linhas = [];
+  (estado.dashVs || []).map(acharVeiculo).filter(Boolean).forEach((v) => {
+    itensProcesso(v.origem).forEach((x) => {
+      const m = v.concluido[x.k];
+      if (m && m.data === data) linhas.push({ v, x, m });
+    });
+  });
+  abrirModal(`Concluído em ${dataBR(data)}`, linhas.length ? `<div class="lista-proximos">${linhas.map(({ v, x, m }, i) => `
+    <div class="pr-item clicavel" data-dia="${i}"><div class="ponto" style="background:var(--verde)"></div>
+      <div class="pr-texto"><div class="t">${esc(x.it.i)}</div>
+      <div class="s">${esc(nomeVeiculo(v))} · fase ${x.f.n}: ${esc(x.f.t)}${m.por ? ' · por ' + esc(m.por) : ''}</div></div></div>`).join('')}</div>`
+    : '<p class="fraco">Nenhum item concluído neste dia.</p>', [{ texto: 'Fechar', acao: fecharModal }]);
+  $$('[data-dia]').forEach((el) => { el.onclick = () => { const l = linhas[+el.dataset.dia]; fecharModal(); irChecklist(l.v.id, [l.x.f.n]); }; });
+}
+
 // ---------------------------------------------------------------- gráficos (SVG e CSS, sem biblioteca)
-function rosca(pct, rotulo, cor) {
+function rosca(pct, rotulo, cor, acao) {
   const r = 42, c = 2 * Math.PI * r;
-  return `<div class="rosca"><svg viewBox="0 0 100 100" aria-hidden="true">
+  return `<div class="rosca ${acao ? 'clicavel' : ''}" ${acao ? `onclick="${acao}" title="Abrir no fluxograma"` : ''}><svg viewBox="0 0 100 100" aria-hidden="true">
     <circle cx="50" cy="50" r="${r}" class="r-fundo"/>
     ${pct ? `<circle cx="50" cy="50" r="${r}" class="r-valor" style="stroke:${cor || 'var(--laranja)'}" stroke-dasharray="${(c * pct / 100).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 50 50)"/>` : ''}
   </svg><div class="rosca-n"><b>${pct}%</b><span>${esc(rotulo)}</span></div></div>`;
 }
 
-function barraH(rotulo, feitos, total, subHtml) {
+function barraH(rotulo, feitos, total, subHtml, acao) {
   const pct = total ? Math.round((feitos / total) * 100) : 0;
-  return `<div class="bh"><div class="bh-t"><span>${esc(rotulo)}</span><b>${feitos}/${total} · ${pct}%</b></div>
+  return `<div class="bh ${acao ? 'clicavel' : ''}" ${acao ? `onclick="${acao}" title="Abrir no fluxograma"` : ''}><div class="bh-t"><span>${esc(rotulo)}</span><b>${feitos}/${total} · ${pct}%</b></div>
     <div class="barra ${pct === 100 ? 'completa' : ''}"><i style="width:${pct}%"></i></div>${subHtml ? `<div class="bh-s">${subHtml}</div>` : ''}</div>`;
 }
 
 function colunas(lista) {
   const max = Math.max(1, ...lista.map((x) => x.n));
-  return `<div class="colunas">${lista.map((x) => `<div class="col" title="${esc(x.t || '')}: ${x.n}">
+  return `<div class="colunas">${lista.map((x) => `<div class="col ${x.a ? 'clicavel' : ''}" title="${esc(x.t || '')}: ${x.n}" ${x.a ? `onclick="${x.a}"` : ''}>
     <em>${x.n || ''}</em><i style="height:${Math.round((x.n / max) * 100)}%"></i><span>${esc(x.r)}</span></div>`).join('')}</div>`;
 }
 
 // faixa das 13 fases: verde concluída, laranja com algo feito, cinza não começou, vazia sem itens
-function faixaFases(veiculos, filtro) {
+function faixaFases(veiculos, filtro, clique) {
   return `<div class="faixa">${FASES.map((f) => {
     const p = contar(veiculos, (x) => x.f.n === f.n && (!filtro || filtro(x)));
     const cls = !p.total ? 'sem' : p.pct === 100 ? 'ok' : p.feitos ? 'meio' : 'nada';
-    return `<span class="fx ${cls}" title="Fase ${f.n}: ${esc(f.t)} · ${p.feitos}/${p.total}">${f.n}</span>`;
+    const acao = clique && p.total ? clique(f.n) : '';
+    return `<span class="fx ${cls} ${acao ? 'clicavel' : ''}" ${acao ? `onclick="${acao}"` : ''} title="Fase ${f.n}: ${esc(f.t)} · ${p.feitos}/${p.total}">${f.n}</span>`;
   }).join('')}</div>`;
 }
 
@@ -288,6 +364,7 @@ function telaDashboard() {
     : tipo === 'v' ? [acharVeiculo(id)].filter(Boolean)
     : tipo === 'c' ? d.veiculos.filter((v) => v.clienteId === id) : [];
   const cli = tipo === 'c' ? acharCliente(id) : (vs.length === 1 && vs[0].clienteId ? acharCliente(vs[0].clienteId) : null);
+  estado.dashVs = vs.map((v) => v.id);
 
   const seletor = `<div class="cartao" style="margin-bottom:18px"><div class="cartao-corpo" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
     <label style="font-weight:600;font-size:13px">Mostrar</label>
@@ -335,43 +412,44 @@ function dashGeral(vs, cli) {
   vs.forEach((v) => Object.values(v.concluido).forEach((m) => { if (m && porDia[m.data] !== undefined) porDia[m.data]++; }));
 
   const kpis = um ? [
-    [`${tudo.feitos}/${tudo.total}`, 'itens feitos'],
-    [`${fasesFeitas}/13`, 'fases concluídas'],
-    [faseAtual(um), 'fase atual'],
-    [diasEntre(um.entrada), 'dias em estoque'],
-    [agora, 'itens abertos na fase atual'],
+    [`${tudo.feitos}/${tudo.total}`, 'itens feitos', "abrirJornada('')"],
+    [`${fasesFeitas}/13`, 'fases concluídas', "abrirJornada('')"],
+    [faseAtual(um), 'fase atual', `abrirFase(${faseAtual(um)})`],
+    [diasEntre(um.entrada), 'dias em estoque', `ir('veiculo',{veiculoId:'${um.id}',aba:'dados'})`],
+    [agora, 'itens abertos na fase atual', `abrirFase(${faseAtual(um)})`],
   ] : [
-    [vs.length, 'veículos'],
-    [`${tudo.feitos}/${tudo.total}`, 'itens feitos'],
-    [Math.round(vs.reduce((s, v) => s + diasEntre(v.entrada), 0) / vs.length), 'dias em estoque, média'],
-    [agora, 'itens abertos nas fases atuais'],
+    [vs.length, 'veículos', "ir('fluxogramas',{cargo:''})"],
+    [`${tudo.feitos}/${tudo.total}`, 'itens feitos', "abrirJornada('')"],
+    [Math.round(vs.reduce((s, v) => s + diasEntre(v.entrada), 0) / vs.length), 'dias em estoque, média', "ir('veiculos')"],
+    [agora, 'itens abertos nas fases atuais', "ir('fluxogramas',{cargo:''})"],
   ];
 
   $('#conteudo-aba').innerHTML = `
     ${um ? `<div class="caixa-info" style="margin-top:0"><b>${esc(nomeVeiculo(um))}</b> · ${ORIGENS[um.origem].nome}${um.placa ? ' · ' + esc(um.placa) : ''}${cli ? ' · cliente: ' + esc(cli.nome) : ''} · fase atual: ${esc(FASES[faseAtual(um) - 1].t)}</div>` : ''}
     <div class="dash-topo">
       <div class="cartao dash-roscas"><div class="cartao-corpo">
-        ${rosca(tudo.pct, 'processo inteiro')}
-        ${rosca(jv.pct, 'jornada do veículo', 'var(--preto)')}
-        ${rosca(jc.pct, 'jornada do cliente', 'var(--azul)')}
+        ${rosca(tudo.pct, 'processo inteiro', '', "abrirJornada('')")}
+        ${rosca(jv.pct, 'jornada do veículo', 'var(--preto)', "abrirJornada('veiculo')")}
+        ${rosca(jc.pct, 'jornada do cliente', 'var(--azul)', "abrirJornada('cliente')")}
       </div></div>
-      <div class="indicadores dash-kpis">${kpis.map(([n, r]) => `<div class="indicador"><div class="n">${n}</div><div class="r">${r}</div></div>`).join('')}</div>
+      <div class="indicadores dash-kpis">${kpis.map(([n, r, a]) => `<div class="indicador clicavel" onclick="${a}" title="Abrir"><div class="n">${n}</div><div class="r">${r}</div></div>`).join('')}</div>
     </div>
+    <p class="fraco" style="font-size:11.5px;margin:-8px 0 14px">Clique em qualquer gráfico, fase, cargo ou número para abrir o fluxograma e marcar o que falta.</p>
 
     <div class="grade-2" style="gap:18px;margin-bottom:18px">
       <div class="cartao"><div class="cartao-cabeca"><h3>As 13 fases</h3></div><div class="cartao-corpo">
-        ${faixaFases(vs)}
+        ${faixaFases(vs, null, (n) => `abrirFase(${n})`)}
         <div class="legenda"><span class="fx ok"></span>concluída <span class="fx meio"></span>em andamento <span class="fx nada"></span>não começou</div>
-        ${um ? '' : `<div style="margin-top:16px">${colunas(FASES.map((f) => ({ r: String(f.n), t: f.t, n: vs.filter((v) => faseAtual(v) === f.n).length })))}</div>
+        ${um ? '' : `<div style="margin-top:16px">${colunas(FASES.map((f) => ({ r: String(f.n), t: f.t, n: vs.filter((v) => faseAtual(v) === f.n).length, a: `abrirFase(${f.n})` })))}</div>
           <div class="fraco" style="font-size:11.5px">Quantos veículos estão em cada fase agora</div>`}
       </div></div>
       <div class="cartao"><div class="cartao-cabeca"><h3>Ritmo: itens concluídos por dia</h3><span class="fraco" style="font-size:11.5px">últimos 30 dias</span></div>
-        <div class="cartao-corpo">${colunas(dias.map((x, i) => ({ r: i % 5 === 4 ? x.slice(8) + '/' + x.slice(5, 7) : '', t: dataBR(x), n: porDia[x] })))}</div></div>
+        <div class="cartao-corpo">${colunas(dias.map((x, i) => ({ r: i % 5 === 4 ? x.slice(8) + '/' + x.slice(5, 7) : '', t: dataBR(x), n: porDia[x], a: porDia[x] ? `verDia('${x}')` : '' })))}</div></div>
     </div>
 
     <div class="cartao"><div class="cartao-cabeca"><h3>Cargos: quanto cada um já fez</h3></div><div class="cartao-corpo">
       ${CARGOS.map((c) => ({ c, p: contar(vs, (x) => x.cargos.includes(c.id)) })).filter((x) => x.p.total)
-        .map(({ c, p }) => barraH(c.nome, p.feitos, p.total)).join('')}
+        .map(({ c, p }) => barraH(c.nome, p.feitos, p.total, '', `abrirCargo('${c.id}',0)`)).join('')}
     </div></div>`;
 }
 
@@ -394,7 +472,7 @@ function dashProcessos(vs) {
         const aqui = vs.filter((v) => faseAtual(v) === f.n).length;
         if (aqui) sub += ` · <b>${aqui} ${aqui === 1 ? 'veículo' : 'veículos'} nesta fase</b>`;
       }
-      return barraH(`${f.n}. ${f.t}`, p.feitos, p.total, sub);
+      return barraH(`${f.n}. ${f.t}`, p.feitos, p.total, sub, `abrirFase(${f.n})`);
     }).join('')}</div></div>`;
 }
 
@@ -405,17 +483,17 @@ function dashCargos(vs) {
   })).filter((x) => x.p.total).sort((a, b) => b.agora - a.agora || a.p.pct - b.p.pct);
   $('#conteudo-aba').innerHTML = `
     <div class="cartao" style="margin-bottom:18px"><div class="cartao-cabeca"><h3>Tarefas abertas agora, por cargo</h3></div>
-      <div class="cartao-corpo">${colunas(linhas.map((x) => ({ r: x.c.curto, t: x.c.nome, n: x.agora })))}</div></div>
+      <div class="cartao-corpo">${colunas(linhas.map((x) => ({ r: x.c.curto, t: x.c.nome, n: x.agora, a: `abrirCargo('${x.c.id}',0)` })))}</div></div>
     <div class="cargos-grade">${linhas.map(({ c, p, agora }) => `
       <div class="cartao"><div class="cartao-corpo">
         <div style="display:flex;gap:12px;align-items:center">
-          ${rosca(p.pct, 'feito', p.pct === 100 ? 'var(--verde)' : 'var(--laranja)')}
+          ${rosca(p.pct, 'feito', p.pct === 100 ? 'var(--verde)' : 'var(--laranja)', `abrirCargo('${c.id}',0)`)}
           <div style="flex:1;min-width:0">
             <div style="font-weight:600">${esc(c.nome)}</div>
             <div class="fraco" style="font-size:12px">${p.feitos} de ${p.total} itens · ${agora ? `<b style="color:var(--laranja-escuro)">${agora} agora</b>` : 'nada pendente agora'}</div>
-            <button class="btn pequeno" style="margin-top:8px" onclick="ir('fluxogramas',{cargo:'${c.id}'})">Abrir aba do cargo</button>
+            <button class="btn pequeno" style="margin-top:8px" onclick="abrirCargo('${c.id}',0)">Abrir fluxograma do cargo</button>
           </div>
         </div>
-        <div style="margin-top:12px">${faixaFases(vs, (x) => x.cargos.includes(c.id))}</div>
+        <div style="margin-top:12px">${faixaFases(vs, (x) => x.cargos.includes(c.id), (n) => `abrirCargo('${c.id}',${n})`)}</div>
       </div></div>`).join('')}</div>`;
 }

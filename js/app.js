@@ -15,6 +15,8 @@ const ic = {
   agenda: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
   lista: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>',
   dados: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.7-4 3-9 3s-9-1.3-9-3M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/></svg>',
+  fluxo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="6" height="5" rx="1"/><rect x="15" y="16" width="6" height="5" rx="1"/><rect x="15" y="3" width="6" height="5" rx="1"/><path d="M9 5.5h6M18 8v8M6 8v10.5h9"/></svg>',
+  grafico: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="M7 16v-4M12 16V8M17 16v-7"/></svg>',
   mais: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
   volta: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>',
   foto: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>',
@@ -103,6 +105,8 @@ function entrar() {
 const PAGINAS = [
   { id: 'painel', nome: 'Painel', icone: 'painel' },
   { id: 'veiculos', nome: 'Veículos', icone: 'carro' },
+  { id: 'fluxogramas', nome: 'Fluxogramas', icone: 'fluxo' },
+  { id: 'dashboard', nome: 'Dashboard', icone: 'grafico' },
   { id: 'clientes', nome: 'Clientes', icone: 'gente' },
   { id: 'agenda', nome: 'Agenda', icone: 'agenda' },
   { id: 'processo', nome: 'O processo', icone: 'lista' },
@@ -122,6 +126,7 @@ function ir(pagina, extra) {
   if (extra && extra.veiculoId !== undefined) estado.veiculoId = extra.veiculoId;
   if (extra && extra.clienteId !== undefined) estado.clienteId = extra.clienteId;
   if (extra && extra.aba) estado.aba = extra.aba;
+  if (extra && extra.cargo !== undefined) estado.cargo = extra.cargo;
   $$('#menu button').forEach((b) => b.classList.toggle('ativo', b.dataset.pg === pagina));
   desenhar();
   window.scrollTo(0, 0);
@@ -132,6 +137,7 @@ function desenhar() {
     painel: telaPainel, veiculos: telaVeiculos, veiculo: telaVeiculo,
     clientes: telaClientes, cliente: telaCliente, agenda: telaAgenda,
     processo: telaProcesso, dados: telaDados,
+    fluxogramas: telaFluxogramas, dashboard: telaDashboard,
   };
   (telas[estado.pagina] || telaPainel)();
 }
@@ -389,7 +395,8 @@ function telaVeiculo() {
   const p = progresso(v);
   const fa = FASES[faseAtual(v) - 1];
   topo(nomeVeiculo(v), `${ORIGENS[v.origem].nome} · ${anoVeiculo(v)}${v.placa ? ' · ' + v.placa : ''} · ${diasEntre(v.entrada)} dias em estoque`,
-    `<button class="btn" onclick="ir('veiculos')">${ic.volta} Voltar</button>`);
+    `<button class="btn" onclick="estado.dash='v:${v.id}';ir('dashboard')">${ic.grafico} Dashboard</button>
+     <button class="btn" onclick="ir('veiculos')">${ic.volta} Voltar</button>`);
 
   const abas = [['dados', 'Ficha'], ['checklist', `Checklist (${p.feitos}/${p.total})`], ['fotos', 'Fotos'], ['notas', 'Anotações']];
   $('#pagina').innerHTML = `

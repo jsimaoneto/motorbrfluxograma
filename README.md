@@ -36,6 +36,15 @@ para qualquer ano. Entram também as datas comerciais que mexem na pauta da loja
 Dia do Cliente, Black Friday, temporada de IPVA, férias de julho, 13º salário) e o aniversário de cada cliente
 cadastrado.
 
+### Fluxogramas por cargo e dashboard
+
+- **Fluxogramas › Geral**: o que cada cargo tem para fazer agora, a matriz veículo × cargo e em que fase está cada veículo.
+- **Fluxogramas › uma aba por cargo** (11 cargos): as tarefas da fase atual de cada veículo, com checkbox, e as
+  responsabilidades do cargo nas 13 fases. Marcar um item aqui marca o mesmo item no checklist do veículo, porque
+  todas as telas gravam no mesmo registro. Outra aba aberta no mesmo navegador também se atualiza sozinha.
+- **Dashboard**: escolha um veículo, um cliente (os veículos ligados a ele) ou a loja inteira e veja os gráficos
+  geral, por processo (as 13 fases, com datas previstas e realizadas) e por cargo.
+
 ---
 
 ## Onde os dados ficam guardados
@@ -86,6 +95,7 @@ css/styles.css      visual (identidade da +Motor BR: laranja #FF5A00, preto e ci
 js/fases.js         as 13 fases do manual, com os itens e a origem de cada um
 js/db.js            camada de dados (localStorage e IndexedDB)
 js/agenda.js        feriados, datas comerciais e aniversários
+js/cargos.js        cargos, fluxograma geral, abas por cargo e dashboard
 js/app.js           as telas
 ```
 

@@ -17,6 +17,8 @@ const ic = {
   dados: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.7-4 3-9 3s-9-1.3-9-3M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/></svg>',
   fluxo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="6" height="5" rx="1"/><rect x="15" y="16" width="6" height="5" rx="1"/><rect x="15" y="3" width="6" height="5" rx="1"/><path d="M9 5.5h6M18 8v8M6 8v10.5h9"/></svg>',
   grafico: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="M7 16v-4M12 16V8M17 16v-7"/></svg>',
+  baixar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg>',
+  subir: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 8l5-5 5 5M4 21h16"/></svg>',
   mais: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
   volta: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>',
   foto: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>',
@@ -314,7 +316,9 @@ let filtroV = { busca: '', origem: '', status: 'estoque', fase: '' };
 
 function telaVeiculos() {
   topo('Veículos', 'Banco de veículos e andamento de cada um',
-    `<button class="btn principal" onclick="novoVeiculo()">${ic.mais} Novo veículo</button>`);
+    `<button class="btn" onclick="baixarFicha()" title="Modelo em Excel com todas as informações do cadastro">${ic.baixar} Baixar ficha Excel</button>
+     <button class="btn escuro" onclick="escolherFicha()" title="Cadastra os novos e atualiza os que já existem (pela placa ou chassi)">${ic.subir} Importar Excel</button>
+     <button class="btn principal" onclick="novoVeiculo()">${ic.mais} Novo veículo</button>`);
   const d = dados();
   let lista = d.veiculos.slice().sort((a, b) => (a.entrada || '').localeCompare(b.entrada || ''));
   if (filtroV.status) lista = lista.filter((v) => v.status === filtroV.status);
@@ -455,6 +459,9 @@ function abaDados(v) {
           ${campo('Marca', 'marca', v.marca)}
           ${campo('Modelo', 'modelo', v.modelo)}
           ${campo('Versão', 'versao', v.versao)}
+          ${campo('Motor', 'motor', v.motor || '')}
+          ${campo('Carroceria', 'carroceria', v.carroceria || '', 'select', [['', '']].concat(['SUV', 'Sedã', 'Hatch', 'Picape', 'Minivan', 'Cupê', 'Conversível', 'Perua', 'Utilitário'].map((x) => [x, x])))}
+          ${campo('Blindado', 'blindado', v.blindado || 'Não', 'select', [['Não', 'Não'], ['Sim', 'Sim']])}
           ${campo('Ano de fabricação', 'anoFab', v.anoFab)}
           ${campo('Ano modelo', 'anoMod', v.anoMod)}
           ${campo('Cor', 'cor', v.cor)}
@@ -468,6 +475,16 @@ function abaDados(v) {
           ${campo('Chaves', 'chaves', v.chaves)}
         </div>
         ${campo('Opcionais e observações do veículo', 'opcionais', v.opcionais, 'textarea')}
+      </div>
+    </div>
+
+    <div class="cartao" style="margin-bottom:16px">
+      <div class="cartao-cabeca"><h3>Anúncio no site</h3>
+        ${/^https?:\/\//i.test(v.linkAnuncio || '') ? `<a class="btn pequeno" href="${esc(v.linkAnuncio)}" target="_blank" rel="noopener">Abrir anúncio</a>` : ''}</div>
+      <div class="cartao-corpo">
+        ${campo('Título do anúncio', 'tituloAnuncio', v.tituloAnuncio || '')}
+        ${campo('Sobre o veículo', 'sobre', v.sobre || '', 'textarea')}
+        ${campo('Link do anúncio no site', 'linkAnuncio', v.linkAnuncio || '')}
       </div>
     </div>
 

@@ -61,6 +61,8 @@ function veiculoNovo() {
     marca: '', modelo: '', versao: '', anoFab: '', anoMod: '',
     placa: '', chassi: '', renavam: '', cor: '', combustivel: '', cambio: '',
     km: '', portas: '', opcionais: '', chaves: '2',
+    motor: '', carroceria: '', blindado: 'Não',   // como no anúncio do site da loja
+    tituloAnuncio: '', sobre: '', linkAnuncio: '',
     precoCompra: '', custoPreparacao: '', precoAnuncio: '', precoVenda: '',
     entrada: hoje(), status: 'estoque',   // estoque · vendido · repassado
     fase: 1, concluido: {},               // concluido[chaveItem] = { data, por }

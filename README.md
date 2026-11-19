@@ -36,6 +36,15 @@ para qualquer ano. Entram também as datas comerciais que mexem na pauta da loja
 Dia do Cliente, Black Friday, temporada de IPVA, férias de julho, 13º salário) e o aniversário de cada cliente
 cadastrado.
 
+### Importar veículos pelo Excel
+
+Em **Veículos**, o botão **Baixar ficha Excel** entrega o modelo `modelos/Ficha_Cadastro_Veiculos_MotorBR.xlsx`
+(uma coluna por campo do cadastro, com listas de escolha e aba de instruções; os campos seguem o anúncio do site
+da loja: motor, blindado, opcionais, título e link). **Importar Excel** lê a planilha, mostra quantos veículos são
+novos, quantos serão atualizados (mesma placa ou, sem placa, mesmo chassi) e as linhas com erro, e só grava depois
+de confirmar. Na atualização, só as células preenchidas mudam. Para mudar as colunas, edite `modelos/gerar_ficha.py`
+e `js/importar.js` juntos e rode `python modelos/gerar_ficha.py`.
+
 ### Fluxogramas por cargo e dashboard
 
 - **Fluxogramas › Geral**: o que cada cargo tem para fazer agora, a matriz veículo × cargo e em que fase está cada veículo.

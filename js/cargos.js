@@ -14,6 +14,7 @@ const CARGOS = [
   { id: 'servicos', nome: 'Auxiliar de Serviços Gerais', curto: 'Serv. Gerais', rotulos: ['Serviços Gerais'], dono: 'Serviços Gerais' },
   { id: 'ceo', nome: 'CEO', curto: 'CEO', rotulos: ['CEO'], dono: 'CEO' },
   { id: 'geradm', nome: 'Gerente Administrativo', curto: 'Ger. Adm.', rotulos: ['Ger. Administrativo'], dono: 'Gerente Administrativo' },
+  { id: 'fotografo', nome: 'Fotógrafo (terceirizado, pelo Social Media)', curto: 'Fotógrafo', rotulos: ['Fotógrafo'], dono: 'Fotógrafo' },
   { id: 'germkt', nome: 'Gerente de Marketing', curto: 'Ger. Marketing', rotulos: ['Ger. Marketing'], dono: 'Gerente de Marketing' },
 ];
 const acharCargo = (id) => CARGOS.find((c) => c.id === id);
@@ -52,7 +53,9 @@ const emAndamento = () => dados().veiculos.filter((v) => v.status !== 'repassado
 // itens do cargo ainda abertos na fase em que o veículo está
 function pendentesAgora(v, cargoId) {
   const fa = faseAtual(v);
-  return itensProcesso(v.origem).filter((x) => x.f.n === fa && x.cargos.includes(cargoId) && !v.concluido[x.k]);
+  // carro fora da loja (com o cliente, com o proprietário, em translado): só o translado continua cobrando
+  return itensProcesso(v.origem).filter((x) => x.f.n === fa && x.cargos.includes(cargoId) && !v.concluido[x.k]
+    && (!foraDaLoja(v) || x.f.n === 3));
 }
 
 function marcarItem(vid, k, feito, por) {
@@ -130,7 +133,7 @@ function abaGeral() {
             const fa = FASES[faseAtual(v) - 1];
             return `<tr onclick="ir('veiculo',{veiculoId:'${v.id}',aba:'checklist'})">
               <td class="principal-col">${esc(nomeVeiculo(v))}<div class="fraco">${ORIGENS[v.origem].nome} · ${progresso(v).pct}%</div></td>
-              <td class="fraco">${fa.n}. ${esc(fa.t)}</td>
+              <td class="fraco">${fa.n}. ${esc(fa.t)}<div class="fraco">${foraDaLoja(v) ? '📍 ' : ''}${esc(localDoV(v))}</div></td>
               ${CARGOS.map((c) => {
                 const agora = pendentesAgora(v, c.id).length;
                 const p = contar([v], (x) => x.cargos.includes(c.id));

@@ -123,8 +123,8 @@ const FASES = [
     grupos: [
       { t: 'Anúncio', itens: [
         { i: 'Preço e condição de anúncio aprovados pelo CEO; o que é anunciado obriga a loja (CDC, art. 30)', q: 'CEO', o: 'T' },
-        { i: 'Fotos de anúncio: frente, traseira, laterais, diagonais, interior, painel, porta-malas e detalhes; placa decorativa ou borrada', q: 'Social Media', o: 'T' },
-        { i: 'Publicar no site, nos portais (OLX Autos, Webmotors), no Google Meu Negócio e no Instagram, com os dados do CRM', q: 'Ger. Marketing / Social Media', o: 'T' },
+        { i: 'Fotos de anúncio: frente, traseira, laterais, diagonais, interior, painel, porta-malas e detalhes; placa decorativa ou borrada', q: 'Fotógrafo / Social Media', o: 'T' },
+        { i: 'Publicar no site, nos portais (OLX Autos, Webmotors), no Google Meu Negócio e no Instagram, com os dados do CRM', q: 'Fotógrafo / Ger. Marketing / Social Media', o: 'T' },
         { i: 'Consignado: divulgação conforme o contrato; dados do proprietário nunca aparecem', q: 'Social Media', o: 'C' },
         { i: 'Veículos ligados e verificados (rotina diária do pátio e verificação completa às sextas); a cada 15 dias, relatório e estratégia para os parados há mais tempo', q: 'Motorista / Consultor / CEO', o: 'T' },
       ]},
@@ -275,7 +275,7 @@ const FASES = [
       ]},
       { t: 'Logo depois', itens: [
         { i: 'Pedir avaliação no Google e indicação', q: 'Consultor', o: 'T' },
-        { i: 'Venda finalizada no CRM; anúncio retirado de todos os canais; consignante avisado', q: 'Consultor / Social Media', o: 'T' },
+        { i: 'Venda finalizada no CRM; anúncio retirado de todos os canais; consignante avisado', q: 'Consultor / Social Media / Fotógrafo', o: 'T' },
         { i: 'Agendar o pós-venda da terça-feira seguinte', q: 'Consultor', o: 'T' },
       ]},
     ],

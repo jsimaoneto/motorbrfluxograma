@@ -15,6 +15,14 @@ const vazio = () => ({
   config: { loja: '+Motor BR', atualizado: null },
 });
 
+// Onde o veículo está agora (a "esteira" pedida pelo CEO em 19/11/2026). Fora da loja, o checklist
+// do carro para de cobrar os cargos: só o translado continua valendo.
+const LOCAIS = ['Pátio', 'Funilaria e pintura', 'Mecânica e revisão', 'Blindagem', 'Lavagem e higienização',
+  'Polimento', 'Vistoria e despachante', 'Em translado', 'Com o cliente', 'Com o proprietário', 'Entregue'];
+const LOCAIS_FORA = ['Em translado', 'Com o cliente', 'Com o proprietário', 'Entregue'];
+const localDoV = (v) => v.local || 'Pátio';
+const foraDaLoja = (v) => LOCAIS_FORA.includes(localDoV(v));
+
 let DADOS = vazio();
 const ouvintes = [];
 
@@ -65,6 +73,8 @@ function veiculoNovo() {
     tituloAnuncio: '', sobre: '', linkAnuncio: '',
     precoCompra: '', custoPreparacao: '', precoAnuncio: '', precoVenda: '',
     entrada: hoje(), status: 'estoque',   // estoque · vendido · repassado
+    local: 'Pátio', localDesde: hoje(),   // onde o carro está (LOCAIS); fora da loja, o checklist não cobra
+    localPor: '', localVolta: '',         // quem autorizou a saída e a previsão de volta
     fase: 1, concluido: {},               // concluido[chaveItem] = { data, por }
     fasesDatas: {},                       // fasesDatas[n] = { previsto, realizado }
     proprietario: '', contatoProprietario: '', valorMinimoRepasse: '', comissao: '',

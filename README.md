@@ -45,10 +45,18 @@ novos, quantos serão atualizados (mesma placa ou, sem placa, mesmo chassi) e as
 de confirmar. Na atualização, só as células preenchidas mudam. Para mudar as colunas, edite `modelos/gerar_ficha.py`
 e `js/importar.js` juntos e rode `python modelos/gerar_ficha.py`.
 
+### Onde está o veículo
+
+Cada veículo tem o campo **Onde está agora** (Pátio, Funilaria e pintura, Mecânica e revisão, Blindagem, Lavagem e
+higienização, Polimento, Vistoria e despachante, Em translado, Com o cliente, Com o proprietário, Entregue), com
+quem autorizou a saída e a previsão de volta. Dá para filtrar a lista de veículos por local. Enquanto o carro está
+fora da loja (em translado, com o cliente, com o proprietário ou entregue), as tarefas dele saem das pendências dos
+cargos: só as do translado (Fase 3) continuam valendo.
+
 ### Fluxogramas por cargo e dashboard
 
 - **Fluxogramas › Geral**: o que cada cargo tem para fazer agora, a matriz veículo × cargo e em que fase está cada veículo.
-- **Fluxogramas › uma aba por cargo** (11 cargos): as tarefas da fase atual de cada veículo, com checkbox, e as
+- **Fluxogramas › uma aba por cargo** (12 cargos, com o Fotógrafo terceirizado que trabalha pelo Social Media): as tarefas da fase atual de cada veículo, com checkbox, e as
   responsabilidades do cargo nas 13 fases. Marcar um item aqui marca o mesmo item no checklist do veículo, porque
   todas as telas gravam no mesmo registro. Outra aba aberta no mesmo navegador também se atualiza sozinha.
 - **Dashboard**: escolha um veículo, um cliente (os veículos ligados a ele) ou a loja inteira e veja os gráficos

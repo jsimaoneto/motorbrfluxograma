@@ -312,7 +312,7 @@ function vazioHtml(titulo, texto, acao, botao) {
 }
 
 // ---------------------------------------------------------------- veículos
-let filtroV = { busca: '', origem: '', status: 'estoque', fase: '' };
+let filtroV = { busca: '', origem: '', status: 'estoque', fase: '', local: '' };
 
 function telaVeiculos() {
   topo('Veículos', 'Banco de veículos e andamento de cada um',
@@ -324,6 +324,7 @@ function telaVeiculos() {
   if (filtroV.status) lista = lista.filter((v) => v.status === filtroV.status);
   if (filtroV.origem) lista = lista.filter((v) => v.origem === filtroV.origem);
   if (filtroV.fase) lista = lista.filter((v) => String(faseAtual(v)) === filtroV.fase);
+  if (filtroV.local) lista = lista.filter((v) => localDoV(v) === filtroV.local);
   if (filtroV.busca) {
     const b = filtroV.busca.toLowerCase();
     lista = lista.filter((v) => [v.marca, v.modelo, v.versao, v.placa, v.cor].join(' ').toLowerCase().includes(b));
@@ -342,6 +343,10 @@ function telaVeiculos() {
         <option value="">Toda origem</option>
         ${Object.entries(ORIGENS).map(([k, o]) => `<option value="${k}">${o.nome}</option>`).join('')}
       </select>
+      <select id="f-local">
+        <option value="">Em qualquer lugar</option>
+        ${LOCAIS.map((x) => `<option value="${x}">${esc(x)}</option>`).join('')}
+      </select>
       <select id="f-fase">
         <option value="">Toda fase</option>
         ${FASES.map((f) => `<option value="${f.n}">${f.n}. ${esc(f.t)}</option>`).join('')}
@@ -354,6 +359,8 @@ function telaVeiculos() {
           d.veiculos.length ? null : 'novoVeiculo()', 'Cadastrar veículo')}`;
 
   $('#f-status').value = filtroV.status; $('#f-origem').value = filtroV.origem; $('#f-fase').value = filtroV.fase;
+  $('#f-local').value = filtroV.local;
+  $('#f-local').onchange = (e) => { filtroV.local = e.target.value; telaVeiculos(); };
   $('#f-busca').oninput = (e) => { filtroV.busca = e.target.value; const p = e.target.selectionStart; telaVeiculos(); $('#f-busca').focus(); $('#f-busca').setSelectionRange(p, p); };
   $('#f-status').onchange = (e) => { filtroV.status = e.target.value; telaVeiculos(); };
   $('#f-origem').onchange = (e) => { filtroV.origem = e.target.value; telaVeiculos(); };
@@ -375,6 +382,7 @@ function telaVeiculos() {
           <div class="cv-s">${esc(anoVeiculo(v))}${v.km ? ' · ' + Number(v.km).toLocaleString('pt-BR') + ' km' : ''}${v.cor ? ' · ' + esc(v.cor) : ''}</div>
           <div class="barra ${p.pct === 100 ? 'completa' : ''}"><i style="width:${p.pct}%"></i></div>
           <div class="cv-f"><span style="color:var(--texto-fraco)">Fase ${fa.n}: ${esc(fa.t)}</span><b>${p.pct}%</b></div>
+          <div class="cv-s" style="margin-top:4px">${foraDaLoja(v) ? '📍 ' : ''}${esc(localDoV(v))}${foraDaLoja(v) && v.localVolta ? ' · volta ' + dataBR(v.localVolta) : ''}${foraDaLoja(v) && v.localPor ? ' · ' + esc(v.localPor) : ''}</div>
           ${v.precoAnuncio ? `<div style="margin-top:7px;font-weight:600;font-size:14px">${moeda(v.precoAnuncio)}</div>` : ''}
         </div>
       </div>`;
@@ -400,7 +408,7 @@ function telaVeiculo() {
   if (!v) return ir('veiculos');
   const p = progresso(v);
   const fa = FASES[faseAtual(v) - 1];
-  topo(nomeVeiculo(v), `${ORIGENS[v.origem].nome} · ${anoVeiculo(v)}${v.placa ? ' · ' + v.placa : ''} · ${diasEntre(v.entrada)} dias em estoque`,
+  topo(nomeVeiculo(v), `${ORIGENS[v.origem].nome} · ${anoVeiculo(v)}${v.placa ? ' · ' + v.placa : ''} · ${diasEntre(v.entrada)} dias em estoque · ${localDoV(v)}`,
     `<button class="btn" onclick="estado.dash='v:${v.id}';ir('dashboard')">${ic.grafico} Dashboard</button>
      <button class="btn" onclick="ir('veiculos')">${ic.volta} Voltar</button>`);
 
@@ -455,6 +463,9 @@ function abaDados(v) {
         <div class="grade">
           ${campo('Origem do veículo', 'origem', v.origem, 'select', Object.entries(ORIGENS).map(([k, o]) => [k, o.nome]))}
           ${campo('Status', 'status', v.status, 'select', [['estoque', 'Em estoque'], ['vendido', 'Vendido'], ['repassado', 'Repassado']])}
+          ${campo('Onde está agora', 'local', localDoV(v), 'select', LOCAIS.map((x) => [x, x]))}
+          ${campo('Quem autorizou a saída', 'localPor', v.localPor || '')}
+          ${campo('Previsão de volta', 'localVolta', v.localVolta || '', 'date')}
           ${campo('Data de entrada', 'entrada', v.entrada, 'date')}
           ${campo('Marca', 'marca', v.marca)}
           ${campo('Modelo', 'modelo', v.modelo)}

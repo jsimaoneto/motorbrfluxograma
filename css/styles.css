@@ -405,6 +405,160 @@ textarea { resize: vertical; min-height: 72px; line-height: 1.55; }
 .legenda { display: flex; gap: 6px 14px; flex-wrap: wrap; align-items: center; font-size: 11.5px; color: var(--texto-fraco); margin-top: 10px; }
 .legenda .fx { width: 14px; height: 14px; border-radius: 4px; margin-right: -8px; }
 
+/* ==================================================================
+   Design 2026 · regra 60-30-10 com a identidade da +Motor BR
+   60% neutro (fundo cinza-gelo e superfícies brancas)
+   30% preto/grafite da marca (menu, destaque, cabeçalhos, avisos)
+   10% laranja #FF5A00 só para ação e estado ativo (botão principal, item ativo, progresso, foco)
+   Verde, vermelho e amarelo ficam só para status (feito, atraso, atenção).
+   ================================================================== */
+:root {
+  --fundo: #F3F4F6;
+  --linha: #E6E8EC;
+  --cinza-claro: #EEF0F3;
+  --texto: #15161A;
+  --texto-fraco: #646872;
+  --raio: 16px;
+  --raio-p: 10px;
+  --sombra: 0 1px 2px rgba(21,22,26,.04), 0 2px 8px rgba(21,22,26,.04);
+  --sombra-media: 0 2px 4px rgba(21,22,26,.05), 0 10px 28px rgba(21,22,26,.08);
+  --sombra-forte: 0 12px 40px rgba(21,22,26,.18);
+  --sidebar: 248px;
+  --laranja-brilho: 0 6px 18px rgba(255,90,0,.28);
+}
+body { letter-spacing: -.005em; }
+h1, h2, h3, h4 { letter-spacing: -.015em; }
+::selection { background: rgba(255,90,0,.18); }
+:focus-visible { outline: 3px solid rgba(255,90,0,.45); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* 30% · menu lateral em grafite profundo, item ativo marcado por um filete laranja */
+.barra-lateral { background: linear-gradient(180deg, #17181C 0%, #101114 100%); border-right: 1px solid #000; }
+.barra-lateral .logo { padding: 26px 22px 22px; font-size: 21px; }
+.menu { padding: 16px 12px; }
+.menu button { position: relative; padding: 11px 14px; margin-bottom: 4px; border-radius: 12px; color: #A9ADB5; font-size: 13.5px; }
+.menu button svg { opacity: .85; }
+.menu button:hover { background: rgba(255,255,255,.06); color: #fff; }
+.menu button.ativo { background: rgba(255,255,255,.09); color: #fff; font-weight: 600; box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); }
+.menu button.ativo::before { content: ''; position: absolute; left: -12px; top: 9px; bottom: 9px; width: 4px; border-radius: 0 4px 4px 0; background: var(--laranja); }
+.menu button.ativo svg { color: var(--laranja); opacity: 1; }
+.rodape-lateral { padding: 16px 20px; color: #5F636B; }
+
+/* topo em vidro, mais leve */
+.topo { background: rgba(243,244,246,.78); backdrop-filter: saturate(160%) blur(14px); -webkit-backdrop-filter: saturate(160%) blur(14px); border-bottom: 1px solid rgba(21,22,26,.06); padding: 16px 32px; }
+.topo h1 { font-size: 21px; font-weight: 700; }
+.topo .sub { font-size: 12.5px; margin-top: 2px; }
+.pagina { padding: 26px 32px 72px; }
+
+/* botões: o laranja só no principal */
+.btn { border-radius: 11px; padding: 9px 16px; font-weight: 500; border-color: var(--linha); box-shadow: 0 1px 2px rgba(21,22,26,.04); }
+.btn:hover { background: #F7F8FA; border-color: #D6D9DF; }
+.btn.principal { box-shadow: var(--laranja-brilho); }
+.btn.principal:hover { background: var(--laranja-escuro); box-shadow: 0 8px 22px rgba(255,90,0,.34); }
+.btn.pequeno { border-radius: 9px; }
+input[type=text], input[type=date], input[type=number], input[type=password], input[type=tel], input[type=email], input[type=time], select, textarea {
+  border-radius: 11px; padding: 10px 12px; background: #fff; border-color: var(--linha);
+}
+input:hover, select:hover, textarea:hover { border-color: #D3D6DC; }
+input:focus, select:focus, textarea:focus { box-shadow: 0 0 0 4px rgba(255,90,0,.12); }
+
+/* 60% · superfícies brancas, borda fina e sombra suave */
+.cartao { border-color: var(--linha); box-shadow: var(--sombra); }
+.cartao-cabeca { padding: 17px 22px; border-bottom-color: #F0F1F4; }
+.cartao-cabeca h3 { font-size: 15px; font-weight: 600; }
+.cartao-corpo { padding: 20px 22px; }
+
+/* indicadores: o destaque vira o bloco grafite (30%) com o número em laranja (10%) */
+.indicadores { gap: 14px; }
+.indicador { padding: 18px 20px; border-color: var(--linha); position: relative; overflow: hidden; }
+.indicador .n { font-size: 30px; font-weight: 700; letter-spacing: -.03em; }
+.indicador .r { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; font-weight: 600; margin-top: 6px; }
+.indicador.destaque { border: 0; border-left: 0; background: linear-gradient(140deg, #1C1D22 0%, #101114 100%); color: #fff; box-shadow: var(--sombra-media); }
+.indicador.destaque .n { color: var(--laranja); }
+.indicador.destaque .r { color: #A9ADB5; }
+.indicador.destaque::after { content: ''; position: absolute; right: -24px; top: -24px; width: 90px; height: 90px; border-radius: 50%; background: radial-gradient(circle, rgba(255,90,0,.25), transparent 70%); }
+.indicador.clicavel:hover { transform: translateY(-2px); box-shadow: var(--sombra-media); border-color: #D6D9DF; }
+.indicador.destaque.clicavel:hover { box-shadow: 0 14px 34px rgba(21,22,26,.28); }
+
+/* abas em formato de segmento */
+.abas { gap: 4px; border-bottom: 0; background: #E9EBEF; padding: 4px; border-radius: 13px; width: fit-content; max-width: 100%; margin-bottom: 22px; }
+.abas button { border-bottom: 0; border-radius: 10px; padding: 8px 16px; font-size: 13px; color: var(--texto-fraco); transition: background .15s, color .15s; }
+.abas button:hover { color: var(--texto); background: rgba(255,255,255,.55); }
+.abas button.ativo { background: #fff; color: var(--texto); box-shadow: 0 1px 3px rgba(21,22,26,.1); }
+.abas button.ativo::after { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--laranja); margin-left: 7px; vertical-align: middle; }
+
+/* tabelas: cabeçalho neutro, hover neutro (o laranja fica para o que é ação) */
+.tabela th { font-size: 10.5px; letter-spacing: .07em; color: #8A8E97; background: #F8F9FA; border-bottom-color: var(--linha); padding: 11px 14px; }
+.tabela th:first-child { border-top-left-radius: 10px; }
+.tabela th:last-child { border-top-right-radius: 10px; }
+.tabela td { padding: 13px 14px; border-bottom-color: #F0F1F4; }
+.tabela tbody tr:hover { background: #F7F8FA; }
+
+/* cartões de veículo e trilha */
+.card-veiculo { border-color: var(--linha); }
+.card-veiculo:hover { transform: translateY(-3px); box-shadow: var(--sombra-media); }
+.card-veiculo .capa { height: 150px; }
+.coluna-fase { background: #EBEDF0; border-radius: 14px; }
+.coluna-fase.j-cliente { background: #E4E6EA; }
+.mini-card { border-radius: 11px; box-shadow: 0 1px 2px rgba(21,22,26,.05); }
+.mini-card:hover { border-color: #D6D9DF; box-shadow: var(--sombra-media); }
+.barra, .barra-mini { background: #ECEEF1; }
+.barra { height: 6px; border-radius: 6px; }
+.barra i { border-radius: 6px; }
+
+/* etiquetas mais discretas */
+.etiqueta { padding: 3px 10px; font-weight: 600; }
+.etiqueta.u { background: #1C1D22; }
+.etiqueta.c { background: #EFE7D2; color: #6B5310; }
+
+/* fases do checklist */
+.fase-bloco { border-color: var(--linha); box-shadow: var(--sombra); border-radius: 14px; margin-bottom: 12px; }
+.fase-cabeca { padding: 15px 18px; }
+.fase-cabeca:hover { background: #FAFAFB; }
+.fase-num { width: 32px; height: 32px; background: #EEF0F3; }
+.fase-bloco.andamento { box-shadow: 0 0 0 1px rgba(255,90,0,.35), var(--sombra); }
+.fase-bloco.andamento .fase-num { box-shadow: 0 0 0 4px rgba(255,90,0,.15); }
+.fase-meta { background: #F6F7F9; border-radius: 12px; }
+.item-ck { padding: 10px 6px; border-bottom-color: #F1F2F4; border-radius: 8px; transition: background .12s; }
+.item-ck:hover { background: #FAFAFB; }
+
+/* avisos e caixas: o azul sai, entra o grafite da marca (30%) */
+.caixa-info, .passa-caixa { background: #F1F2F4; border-left: 3px solid #1C1D22; border-radius: 12px; color: #2A2C33; }
+.caixa-aviso { border-radius: 12px; }
+.aviso-flutuante { background: #1C1D22; border-radius: 14px; padding: 12px 20px; box-shadow: 0 14px 40px rgba(21,22,26,.3); }
+
+/* modal */
+.modal { border-radius: 20px; }
+.modal-cabeca { padding: 20px 24px; }
+.modal-corpo { padding: 22px 24px; }
+.modal-pe { padding: 16px 24px; }
+.sobreposicao { background: rgba(16,17,20,.45); backdrop-filter: blur(3px); }
+
+/* login */
+#tela-senha { background: radial-gradient(90% 70% at 80% 10%, rgba(255,90,0,.22) 0%, transparent 55%), radial-gradient(120% 90% at 20% 90%, #23252B 0%, #101114 70%); }
+.caixa-senha { border-radius: 22px; padding: 40px 34px; }
+
+/* agenda */
+.calendario { border-color: var(--linha); border-radius: var(--raio); }
+.cal-dia { border-color: #EEF0F3; }
+.cal-ev { border-radius: 6px; }
+
+/* fluxogramas e dashboard no mesmo padrão */
+.cargo-card { border-radius: 14px; box-shadow: var(--sombra); }
+.cargo-card:hover { border-color: #D6D9DF; box-shadow: var(--sombra-media); }
+.cargo-card.tem { border-left: 1px solid var(--linha); box-shadow: inset 3px 0 0 var(--laranja), var(--sombra); }
+.tabela.matriz th { background: #F8F9FA; }
+.linha-fase .lf-n { background: #EEF0F3; }
+.linha-fase.tem .lf-n { background: #1C1D22; color: #fff; box-shadow: 0 0 0 3px rgba(255,90,0,.35); }
+.tarefa-veiculo { border-radius: 12px; border-color: var(--linha); background: #fff; }
+.bh.clicavel:hover, .pr-item.clicavel:hover { background: #F6F7F9; }
+.fx { border-radius: 8px; }
+.fx.nada { background: #ECEEF1; }
+.colunas .col i { border-radius: 6px 6px 2px 2px; background: linear-gradient(180deg, #FF7A33 0%, var(--laranja) 100%); min-height: 0; }
+.colunas { border-bottom: 1px solid var(--linha); }
+.abas { flex-wrap: wrap; overflow: visible; }
+.rosca .r-fundo { stroke: #ECEEF1; }
+
 /* ------------------------------------------------------------------ celular */
 .menu-celular { display: none; }
 .btn-menu { display: none; }

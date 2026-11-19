@@ -465,7 +465,7 @@ function dashGeral(vs, cli) {
       <div class="cartao dash-roscas"><div class="cartao-corpo">
         ${rosca(tudo.pct, 'processo inteiro', '', "abrirJornada('')")}
         ${rosca(jv.pct, 'jornada do veículo', 'var(--preto)', "abrirJornada('veiculo')")}
-        ${rosca(jc.pct, 'jornada do cliente', 'var(--azul)', "abrirJornada('cliente')")}
+        ${rosca(jc.pct, 'jornada do cliente', '#9AA0A8', "abrirJornada('cliente')")}
       </div></div>
       <div class="indicadores dash-kpis">${kpis.map(([n, r, a]) => `<div class="indicador clicavel" onclick="${a}" title="Abrir"><div class="n">${n}</div><div class="r">${r}</div></div>`).join('')}</div>
     </div>
@@ -479,7 +479,7 @@ function dashGeral(vs, cli) {
           <div class="fraco" style="font-size:11.5px">Quantos veículos estão em cada fase agora</div>`}
       </div></div>
       <div class="cartao"><div class="cartao-cabeca"><h3>Ritmo: itens concluídos por dia</h3><span class="fraco" style="font-size:11.5px">últimos 30 dias</span></div>
-        <div class="cartao-corpo">${colunas(dias.map((x, i) => ({ r: i % 5 === 4 ? x.slice(8) + '/' + x.slice(5, 7) : '', t: dataBR(x), n: porDia[x], a: porDia[x] ? `verDia('${x}')` : '' })))}</div></div>
+        <div class="cartao-corpo">${colunas(dias.map((x, i) => ({ r: i % 5 === 4 ? x.slice(8) : '', t: dataBR(x), n: porDia[x], a: porDia[x] ? `verDia('${x}')` : '' })))}</div></div>
     </div>
 
     <div class="cartao"><div class="cartao-cabeca"><h3>Cargos: quanto cada um já fez</h3></div><div class="cartao-corpo">

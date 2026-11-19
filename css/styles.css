@@ -559,6 +559,38 @@ input:focus, select:focus, textarea:focus { box-shadow: 0 0 0 4px rgba(255,90,0,
 .abas { flex-wrap: wrap; overflow: visible; }
 .rosca .r-fundo { stroke: #ECEEF1; }
 
+/* ==================================================================
+   Alinhado ao site da loja (maismotorbr.com.br): fundo #ECEDF2, preto quente, texto #333,
+   Poppins com nome de veículo em maiúsculas, faixa laranja no topo e o logo oficial.
+   ================================================================== */
+:root {
+  --fundo: #ECEDF2;
+  --preto: #1B1A19;
+  --grafite: #2A2826;
+  --texto: #1B1A19;
+  --raio: 12px;
+  --raio-p: 8px;
+}
+body { color: #333; }
+#app.pronto::before { content: ''; position: fixed; top: 0; left: 0; right: 0; height: 4px; background: var(--laranja); z-index: 60; }
+.barra-lateral { background: linear-gradient(180deg, #1B1A19 0%, #0E0E0E 100%); padding-top: 4px; }
+.barra-lateral .logo { padding: 20px 18px 18px; }
+.placa-logo { display: block; background: #fff; border-radius: 10px; padding: 10px 12px; }
+.placa-logo img { display: block; width: 100%; height: auto; }
+.barra-lateral .logo small { margin-top: 10px; text-align: center; }
+.topo { background: rgba(236,237,242,.82); top: 4px; }
+.logo-login { width: 220px; max-width: 80%; height: auto; display: block; margin: 0 auto 8px; }
+.caixa-senha .marca { font-size: 13px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: var(--laranja); margin-bottom: 6px; }
+.btn, .btn.pequeno { border-radius: 8px; }
+.btn.principal { font-weight: 600; }
+.indicador.destaque { background: linear-gradient(140deg, #1B1A19 0%, #0E0E0E 100%); }
+.etiqueta.u, .linha-fase.tem .lf-n { background: #1B1A19; }
+.caixa-info, .passa-caixa { border-left-color: #1B1A19; }
+.aviso-flutuante { background: #1B1A19; }
+/* nome do veículo em maiúsculas, como nos anúncios do site */
+.mini-card .mc-t, .card-veiculo .cv-t, .tarefa-veiculo .tv-cab b, .tabela.matriz .principal-col { text-transform: uppercase; letter-spacing: .01em; }
+.card-veiculo .cv-t { font-size: 13.5px; }
+
 /* ------------------------------------------------------------------ celular */
 .menu-celular { display: none; }
 .btn-menu { display: none; }

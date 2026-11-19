@@ -205,13 +205,15 @@ function telaPainel() {
     .slice(0, 8);
 
   const indicadores = [
-    { n: emEstoque.length, r: 'veículos em estoque', c: 'destaque' },
-    { n: emEstoque.filter((v) => faseAtual(v) <= 4).length, r: 'em preparação' },
-    { n: emEstoque.filter((v) => faseAtual(v) >= 5 && v.status === 'estoque').length, r: 'anunciados' },
-    { n: parados.length, r: 'parados há mais de 30 dias', c: parados.length ? 'alerta' : '' },
-    { n: leads.length, r: 'leads e negociações' },
-    { n: vendidos.length, r: 'vendidos' },
-  ];
+    { l: emEstoque, r: 'veículos em estoque', c: 'destaque' },
+    { l: emEstoque.filter((v) => faseAtual(v) <= 4), r: 'em preparação' },
+    { l: emEstoque.filter((v) => faseAtual(v) >= 5 && v.status === 'estoque'), r: 'anunciados' },
+    { l: parados, r: 'parados há mais de 30 dias', c: parados.length ? 'alerta' : '' },
+    { l: leads, r: 'leads e negociações', tipo: 'c' },
+    { l: vendidos, r: 'vendidos' },
+  ].map((i) => ({ ...i, n: i.l.length }));
+  // cada número abre o que ele conta (ver abrirIndicador em cargos.js)
+  estado.painelListas = indicadores.map((i) => ({ titulo: i.r, tipo: i.tipo || 'v', ids: i.l.map((x) => x.id) }));
 
   const colunas = FASES.map((f) => {
     const lista = d.veiculos.filter((v) => v.status !== 'vendido' && faseAtual(v) === f.n);
@@ -220,7 +222,7 @@ function telaPainel() {
 
   $('#pagina').innerHTML = `
     <div class="indicadores">
-      ${indicadores.map((i) => `<div class="indicador ${i.c || ''}"><div class="n">${i.n}</div><div class="r">${i.r}</div></div>`).join('')}
+      ${indicadores.map((i, k) => `<div class="indicador clicavel ${i.c || ''}" onclick="abrirIndicador(${k})" title="Abrir"><div class="n">${i.n}</div><div class="r">${i.r}</div></div>`).join('')}
     </div>
 
     <div class="cartao" style="margin-bottom:20px">

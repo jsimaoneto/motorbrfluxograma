@@ -323,6 +323,41 @@ function verDia(data) {
   $$('[data-dia]').forEach((el) => { el.onclick = () => { const l = linhas[+el.dataset.dia]; fecharModal(); irChecklist(l.v.id, [l.x.f.n]); }; });
 }
 
+// ---------------------------------------------------------------- números do Painel
+// um só: abre direto (veículo no dashboard, cliente no cadastro); vários: lista para escolher; nenhum: a tela da lista
+function abrirIndicador(n) {
+  const { titulo, tipo, ids } = estado.painelListas[n];
+  const dashV = (id) => { estado.dash = 'v:' + id; estado.dashAba = 'geral'; ir('dashboard'); };
+  const dashC = (id) => { estado.dash = 'c:' + id; estado.dashAba = 'geral'; ir('dashboard'); };
+  const cadV = (id) => ir('veiculo', { veiculoId: id, aba: 'dados' });
+  const cadC = (id) => ir('cliente', { clienteId: id });
+  if (!ids.length) return ir(tipo === 'c' ? 'clientes' : 'veiculos');
+  if (ids.length === 1) return tipo === 'c' ? cadC(ids[0]) : dashV(ids[0]);
+
+  const linhas = ids.map((id) => {
+    if (tipo === 'c') {
+      const c = acharCliente(id);
+      const temVeiculo = dados().veiculos.some((v) => v.clienteId === id);
+      return `<div class="pr-item clicavel" data-ind="${id}"><div class="pr-texto">
+        <div class="t">${esc(c.nome || 'Cliente sem nome')}</div><div class="s">${esc(c.status)}${c.temperatura ? ' · ' + esc(c.temperatura) : ''}${c.telefone ? ' · ' + esc(c.telefone) : ''}</div></div>
+        <button class="btn pequeno" data-ind-cad="${id}">Cadastro</button>
+        ${temVeiculo ? `<button class="btn pequeno" data-ind-dash="${id}">Dashboard</button>` : ''}</div>`;
+    }
+    const v = acharVeiculo(id);
+    return `<div class="pr-item clicavel" data-ind="${id}"><div class="pr-texto">
+      <div class="t">${esc(nomeVeiculo(v))}${v.placa ? ' · ' + esc(v.placa) : ''}</div>
+      <div class="s">Fase ${faseAtual(v)}: ${esc(FASES[faseAtual(v) - 1].t)} · ${progresso(v).pct}% · ${diasEntre(v.entrada)} dias</div></div>
+      <button class="btn pequeno" data-ind-dash="${id}">Dashboard</button>
+      <button class="btn pequeno" data-ind-cad="${id}">Cadastro</button></div>`;
+  });
+  abrirModal(titulo.charAt(0).toUpperCase() + titulo.slice(1), `<div class="lista-proximos">${linhas.join('')}</div>`,
+    [{ texto: 'Fechar', acao: fecharModal }, { texto: tipo === 'c' ? 'Ver todos os clientes' : 'Ver todos os veículos', acao: () => { fecharModal(); ir(tipo === 'c' ? 'clientes' : 'veiculos'); } }]);
+  const ligar = (sel, fn) => $$(sel).forEach((el) => { el.onclick = (e) => { e.stopPropagation(); fecharModal(); fn(Object.values(el.dataset)[0]); }; });
+  ligar('[data-ind-dash]', tipo === 'c' ? dashC : dashV);
+  ligar('[data-ind-cad]', tipo === 'c' ? cadC : cadV);
+  ligar('[data-ind]', tipo === 'c' ? cadC : dashV);
+}
+
 // ---------------------------------------------------------------- gráficos (SVG e CSS, sem biblioteca)
 function rosca(pct, rotulo, cor, acao) {
   const r = 42, c = 2 * Math.PI * r;

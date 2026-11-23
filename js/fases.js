@@ -308,7 +308,7 @@ const FASES = [
     grupos: [
       { t: 'Acompanhamento', itens: [
         { i: 'Ligação de pós-venda na terça-feira seguinte, em até 2 minutos, registrada no CRM (automação com IA usando áudios do CEO)', q: 'Automação com IA / CEO', o: 'T' },
-        { i: 'Contatos de 1, 2 e 3 meses e de 1 ano (projeto em andamento; até a automação, manual)', q: 'Automação com IA', o: 'T' },
+        { i: 'Contatos de 1, 2 e 3 meses e de 1 ano (projeto em andamento; até a automação, manual)', q: 'Automação com IA / CEO', o: 'T' },
         { i: 'Confirmar que a transferência foi concluída no prazo', q: 'Ger. Administrativo', o: 'T' },
         { i: 'NPS, avaliação online e pedido de indicação', q: 'Consultor / Pré-Vendas', o: 'T' },
       ]},

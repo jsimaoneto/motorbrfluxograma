@@ -413,7 +413,9 @@ function telaVeiculo() {
      <button class="btn" onclick="ir('veiculos')">${ic.volta} Voltar</button>`);
 
   const rec = resumoRec(v);
+  const vis = resumoVis(v);
   const abas = [['dados', 'Ficha'], ['recebimento', `Recebimento (${rec.avaliados}/${rec.total})`],
+    ['vistoria', `Vistoria (${vis.avaliados}/${vis.total})`],
     ['checklist', `Checklist (${p.feitos}/${p.total})`], ['fotos', 'Fotos'], ['notas', 'Anotações']];
   $('#pagina').innerHTML = `
     <div class="cartao" style="margin-bottom:18px">
@@ -434,7 +436,7 @@ function telaVeiculo() {
       `<button class="${estado.aba === id ? 'ativo' : ''}" onclick="ir('veiculo',{aba:'${id}'})">${nome}</button>`).join('')}</div>
     <div id="conteudo-aba"></div>`;
 
-  ({ dados: abaDados, recebimento: abaRecebimento, checklist: abaChecklist, fotos: abaFotos, notas: abaNotas }[estado.aba] || abaDados)(v);
+  ({ dados: abaDados, recebimento: abaRecebimento, vistoria: abaVistoria, checklist: abaChecklist, fotos: abaFotos, notas: abaNotas }[estado.aba] || abaDados)(v);
 }
 
 function campo(rotulo, chave, valor, tipo, opcoes) {

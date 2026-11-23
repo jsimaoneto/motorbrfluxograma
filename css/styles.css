@@ -634,3 +634,20 @@ body { color: #333; }
 .tabela-rec .obs-rec { width: 100%; border: 1px solid var(--borda); border-radius: 6px; padding: 5px 7px;
   font: inherit; font-size: 12.5px; background: transparent; color: inherit; }
 .tabela-rec .nowrap { white-space: nowrap; }
+
+/* ---------------------------------------------- checklist de vistoria (js/vistoria.js) */
+.vistas-carro { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+.vista-carro { margin: 0; border: 1px solid var(--linha); border-radius: var(--raio); padding: 6px; background: var(--papel); }
+.vista-carro svg { width: 100%; height: auto; display: block; cursor: crosshair; }
+.vista-carro figcaption { font-size: 10.5px; text-align: center; color: var(--texto-fraco); margin-top: 2px; }
+.vista-carro .corpo path, .vista-carro .corpo circle,
+.vista-carro .corpo rect, .vista-carro .corpo line { fill: #fff; stroke: #666; stroke-width: 2; stroke-linejoin: round; }
+.vista-carro .corpo .vidro { fill: #e9eaef; }
+.vista-carro .marca circle { fill: var(--laranja); stroke: #fff; stroke-width: 2; }
+.vista-carro .marca text { fill: #fff; font: 700 9px Poppins, sans-serif; }
+.marca-linha { display: flex; gap: 8px; align-items: center; margin-bottom: 6px; }
+.marca-linha .rot-marca { font-size: 11.5px; color: var(--texto-fraco); min-width: 104px; }
+.n-marca { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px;
+           border-radius: 50%; background: var(--laranja); color: #fff; font-size: 11px; font-weight: 600; flex: none; }
+.btn.reprovado { background: var(--vermelho); border-color: var(--vermelho); color: #fff; }
+.btn.reprovado:hover { background: #a82c23; border-color: #a82c23; }

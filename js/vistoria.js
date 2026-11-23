@@ -351,7 +351,7 @@ function imprimirVis(vid, emBranco) {
     <title>Checklist de vistoria${emBranco ? '' : ' · ' + esc(nomeVeiculo(v))}</title>
     <style>
       @page { size: A4; margin: 11mm; }
-      body { font: 10.5px/1.35 Arial, Helvetica, sans-serif; color: #1B1A19; margin: 0; }
+      body { font: 9.6px/1.2 Arial, Helvetica, sans-serif; color: #1B1A19; margin: 0; }
       .topo { display: flex; align-items: center; gap: 14px; border-bottom: 3px solid #FF5A00;
               padding-bottom: 8px; margin-bottom: 10px; }
       .topo img { height: 46px; }
@@ -364,7 +364,7 @@ function imprimirVis(vid, emBranco) {
       .cab div { flex: 1 1 140px; color: #666; }
       .cab span { display: block; border-bottom: 1px solid #999; min-height: 14px; color: #1B1A19;
                   font-size: 10.5px; padding-top: 1px; }
-      h2 { font-size: 10.5px; margin: 10px 0 5px; text-transform: uppercase; letter-spacing: .05em; }
+      h2 { font-size: 10.5px; margin: 8px 0 4px; text-transform: uppercase; letter-spacing: .05em; }
       .vistas { display: flex; gap: 6px; }
       .vistas figure { flex: 1; margin: 0; border: 1px solid #ccc; border-radius: 5px; padding: 3px; }
       .vistas svg { width: 100%; height: auto; display: block; }
@@ -380,7 +380,7 @@ function imprimirVis(vid, emBranco) {
                    width: 13px; height: 13px; text-align: center; line-height: 13px; font-size: 8.5px; }
       .linhas-livres { height: 44px; background: repeating-linear-gradient(#fff 0 14px, #bbb 14px 15px); }
       table { width: 100%; border-collapse: collapse; }
-      td, th { border: 1px solid #bbb; padding: 2.5px 5px; vertical-align: top; }
+      td, th { border: 1px solid #bbb; padding: 1.1px 5px; vertical-align: top; }
       th { background: #1B1A19; color: #fff; font-size: 9.5px; text-align: left; }
       tr.g td { background: #f1f2f5; font-weight: bold; border-left: 3px solid #FF5A00; }
       tr.g i { font-weight: 400; color: #666; font-size: 9px; }
@@ -390,7 +390,7 @@ function imprimirVis(vid, emBranco) {
       td.e span.mk { background: #FF5A00; color: #fff; border-color: #FF5A00; }
       td.e span.mk.ruim { background: #C62828; border-color: #C62828; }
       td.o { width: 30%; }
-      .rod { margin-top: 14px; font-size: 9.5px; display: flex; gap: 20px; }
+      .rod { margin-top: 11px; font-size: 9.5px; display: flex; gap: 20px; }
       .rod span { border-top: 1px solid #999; padding-top: 3px; flex: 1; text-align: center; color: #666; }
       .assin { margin-top: 10px; font-size: 8.5px; color: #888; display: flex; justify-content: space-between;
                border-top: 1px solid #ddd; padding-top: 5px; }

@@ -170,8 +170,8 @@ function abaRecebimento(v) {
 
 // Abre uma janela só com a folha, para o navegador imprimir ou salvar em PDF
 function imprimirRec(vid, emBranco) {
-  const v = acharVeiculo(vid);
-  if (!v) return;
+  // sem id: folha modelo, chamada da tela Checklists
+  const v = acharVeiculo(vid) || { id: '', placa: '', km: '', recebimento: { itens: {} } };
   const r = recDoV(v);
   const linhas = CHECK_RECEBIMENTO.map((g, gi) => `
     <tr class="g"><td colspan="3">${esc(g.t)}</td></tr>
@@ -183,16 +183,27 @@ function imprimirRec(vid, emBranco) {
         <td class="o">${esc(x.obs || '')}</td></tr>`;
     }).join('')}`).join('');
 
+  const logo = new URL('img/logo-motorbr.png', location.href).href;
   const w = window.open('', '_blank');
   if (!w) { avisar('O navegador bloqueou a janela de impressão. Libere os pop-ups para este site.'); return; }
   w.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
     <title>Checklist de recebimento${emBranco ? '' : ' · ' + esc(nomeVeiculo(v))}</title>
     <style>
-      body { font: 11px/1.35 Arial, sans-serif; color: #222; margin: 18px; }
-      h1 { font-size: 15px; margin: 0 0 2px; }
-      .sub { font-size: 10.5px; color: #666; margin-bottom: 10px; }
-      .cab { display: flex; gap: 14px; flex-wrap: wrap; font-size: 10.5px; margin-bottom: 10px; }
-      .cab span { border-bottom: 1px solid #999; min-width: 150px; padding-bottom: 2px; }
+      @page { size: A4; margin: 11mm; }
+      body { font: 10.5px/1.3 Arial, Helvetica, sans-serif; color: #1B1A19; margin: 0; }
+      .topo { display: flex; align-items: center; gap: 14px; border-bottom: 3px solid #FF5A00;
+              padding-bottom: 8px; margin-bottom: 10px; }
+      .topo img { height: 46px; }
+      .topo .tit { flex: 1; }
+      .topo h1 { font-size: 16px; margin: 0; letter-spacing: -.01em; }
+      .sub { font-size: 9.5px; color: #666; margin-top: 2px; }
+      .topo .sel { font-size: 9px; color: #fff; background: #1B1A19; padding: 5px 9px; border-radius: 4px;
+                   text-align: center; font-weight: bold; letter-spacing: .04em; }
+      .assin { margin-top: 10px; font-size: 8.5px; color: #888; display: flex; justify-content: space-between;
+               border-top: 1px solid #ddd; padding-top: 5px; }
+      .cab { display: flex; gap: 8px 14px; flex-wrap: wrap; font-size: 9.5px; margin-bottom: 9px; }
+      .cab div { flex: 1 1 150px; color: #666; }
+      .cab span { display: block; border-bottom: 1px solid #999; min-height: 14px; color: #1B1A19; padding-top: 1px; }
       table { width: 100%; border-collapse: collapse; }
       td, th { border: 1px solid #bbb; padding: 3px 5px; vertical-align: top; }
       th { background: #eee; font-size: 10px; text-align: left; }
@@ -206,17 +217,24 @@ function imprimirRec(vid, emBranco) {
       .rod span { border-top: 1px solid #999; padding-top: 3px; flex: 1; }
       tr { page-break-inside: avoid; }
     </style></head><body>
-    <h1>+Motor BR · Checklist de recebimento do veículo</h1>
-    <div class="sub">C conforme · R precisa de reparo · NA não se aplica. Item em R vai para o orçamento de preparação (Fase 2).</div>
+    <div class="topo">
+      <img src="${logo}" alt="+Motor BR">
+      <div class="tit"><h1>Checklist de recebimento do veículo</h1>
+        <div class="sub">Avaliação técnica na chegada do carro · C conforme / R precisa de reparo / NA não se aplica ·
+          item em R vai para o orçamento de preparação (Fase 2)</div></div>
+      <div class="sel">+MOTOR BR<br>RECEBIMENTO</div>
+    </div>
     <div class="cab">
-      <div>Veículo: <span>${emBranco ? '' : esc(nomeVeiculo(v))}</span></div>
-      <div>Placa: <span>${emBranco ? '' : esc(v.placa || '')}</span></div>
-      <div>Km: <span>${emBranco ? '' : esc(v.km || '')}</span></div>
-      <div>Data: <span>${emBranco ? '' : dataBR(r.data || hoje())}</span></div>
-      <div>Quem conferiu: <span>${emBranco ? '' : esc(r.por || '')}</span></div>
+      <div>Veículo<span>${emBranco ? '' : esc(nomeVeiculo(v))}</span></div>
+      <div>Placa<span>${emBranco ? '' : esc(v.placa || '')}</span></div>
+      <div>Km<span>${emBranco ? '' : esc(v.km || '')}</span></div>
+      <div>Data<span>${emBranco ? '' : dataBR(r.data || hoje())}</span></div>
+      <div>Quem conferiu<span>${emBranco ? '' : esc(r.por || '')}</span></div>
     </div>
     <table><thead><tr><th>Item</th><th>C / R / NA</th><th>Observação</th></tr></thead><tbody>${linhas}</tbody></table>
     <div class="rod"><span>Assinatura de quem conferiu</span><span>Assinatura do consultor</span></div>
+    <div class="assin"><span>+Motor BR · Processo de vendas</span>
+      <span>Consultoria e processo: J. Simão Neto · CRP 06/92454 · 2026</span></div>
     </body></html>`);
   w.document.close();
   w.focus();

@@ -322,8 +322,8 @@ function abaVistoria(v) {
 
 // --------------------------------------------------------------- impressão
 function imprimirVis(vid, emBranco) {
-  const v = acharVeiculo(vid);
-  if (!v) return;
+  // sem id: folha modelo, chamada da tela Checklists
+  const v = acharVeiculo(vid) || { id: '', placa: '', km: '', vistoria: { itens: {}, marcas: [] } };
   const r = visDoV(v);
   const logo = new URL('img/logo-motorbr.png', location.href).href;
 
@@ -424,4 +424,53 @@ function imprimirVis(vid, emBranco) {
   w.document.close();
   w.focus();
   w.print();
+}
+
+// ------------------------------------------------- tela Checklists (menu lateral)
+// Área de consulta: mostra os dois checklists como referência, sem veículo escolhido,
+// e dá a folha em branco (imprimir ou PDF pronto) para levar ao pátio.
+const MODELOS_CK = [
+  { id: 'vistoria', nome: 'Checklist de vistoria do veículo de passeio',
+    sub: 'Conferência de rotina antes de test drive, translado, entrega ao cliente e devolução',
+    grupos: VISTORIA.map((g) => ({ t: g.t, itens: g.itens, legenda: estadosDo(g).map(([e, n]) => e + ' ' + n.toLowerCase()).join(' · ') })),
+    total: totalVis, pdf: 'modelos/Checklist-Vistoria-MotorBR-branco.pdf',
+    exemplo: 'modelos/Checklist-Vistoria-MotorBR-exemplo.pdf', imprimir: 'imprimirVis' },
+  { id: 'recebimento', nome: 'Checklist de recebimento do veículo',
+    sub: 'Avaliação técnica na chegada do carro, antes de entrar no estoque',
+    grupos: CHECK_RECEBIMENTO.map((g) => ({ t: g.t, itens: g.itens, legenda: 'C conforme · R precisa de reparo · NA não se aplica' })),
+    total: totalRec, pdf: 'modelos/Checklist-Recebimento-MotorBR-branco.pdf', exemplo: '', imprimir: 'imprimirRec' },
+];
+
+function telaChecklists() {
+  topo('Checklists', 'Modelos de conferência do veículo, para consultar, imprimir e baixar', '');
+  $('#pagina').innerHTML = `
+    <div class="caixa-info" style="margin-bottom:18px">
+      Estes são os dois modelos usados na loja. Para preencher de verdade, abra o veículo em
+      <b>Veículos</b> e use a aba correspondente — o que for marcado lá fica guardado na ficha dele.
+      Aqui você consulta os itens e tira a folha em branco para o pátio.
+    </div>
+    ${MODELOS_CK.map((m) => `
+      <div class="cartao" style="margin-bottom:18px">
+        <div class="cartao-cabeca"><h3>${esc(m.nome)}</h3>
+          <span style="font-size:11.5px;color:var(--texto-fraco)">${m.total} itens · ${m.grupos.length} grupos</span></div>
+        <div class="cartao-corpo">
+          <p style="margin:0 0 12px;font-size:12.5px;color:var(--texto-fraco)">${esc(m.sub)}</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+            <button class="btn principal" onclick="${m.imprimir}('',true)">${ic.baixar} Folha em branco para imprimir</button>
+            ${m.pdf ? `<a class="btn" href="${m.pdf}" download>${ic.baixar} Baixar PDF em branco</a>` : ''}
+            ${m.exemplo ? `<a class="btn" href="${m.exemplo}" target="_blank" rel="noopener">${ic.foto} Ver exemplo preenchido</a>` : ''}
+          </div>
+          ${m.grupos.map((g) => `
+            <div class="fase-bloco">
+              <div class="fase-cabeca" onclick="this.parentElement.classList.toggle('aberta')">
+                <div class="ft"><h4>${esc(g.t)}</h4><p>${esc(g.legenda)}</p></div>
+                <div class="conta">${g.itens.length} itens</div>
+              </div>
+              <div class="fase-corpo">
+                ${g.itens.map((it) => `<div class="item-ck"><div style="width:17px;flex:none"></div>
+                  <div class="txt">${esc(it)}</div></div>`).join('')}
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`).join('')}`;
 }

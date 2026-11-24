@@ -17,6 +17,7 @@ const ic = {
   dados: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.7-4 3-9 3s-9-1.3-9-3M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/></svg>',
   fluxo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="6" height="5" rx="1"/><rect x="15" y="16" width="6" height="5" rx="1"/><rect x="15" y="3" width="6" height="5" rx="1"/><path d="M9 5.5h6M18 8v8M6 8v10.5h9"/></svg>',
   grafico: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="M7 16v-4M12 16V8M17 16v-7"/></svg>',
+  prancheta: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1H9V4z"/><path d="M9 11l1.5 1.5L13 10M9 16h6"/></svg>',
   baixar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg>',
   subir: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 8l5-5 5 5M4 21h16"/></svg>',
   mais: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
@@ -112,6 +113,7 @@ const PAGINAS = [
   { id: 'clientes', nome: 'Clientes', icone: 'gente' },
   { id: 'agenda', nome: 'Agenda', icone: 'agenda' },
   { id: 'processo', nome: 'O processo', icone: 'lista' },
+  { id: 'checklists', nome: 'Checklists', icone: 'prancheta' },
   { id: 'dados', nome: 'Dados e backup', icone: 'dados' },
 ];
 
@@ -138,7 +140,7 @@ function desenhar() {
   const telas = {
     painel: telaPainel, veiculos: telaVeiculos, veiculo: telaVeiculo,
     clientes: telaClientes, cliente: telaCliente, agenda: telaAgenda,
-    processo: telaProcesso, dados: telaDados,
+    processo: telaProcesso, checklists: telaChecklists, dados: telaDados,
     fluxogramas: telaFluxogramas, dashboard: telaDashboard,
   };
   (telas[estado.pagina] || telaPainel)();

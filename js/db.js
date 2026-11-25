@@ -75,6 +75,7 @@ function veiculoNovo() {
     precoCompra: '', custoPreparacao: '', precoAnuncio: '', precoVenda: '',
     entrada: hoje(), status: 'estoque',   // estoque · vendido · repassado
     local: 'Pátio', localDesde: hoje(),   // onde o carro está (LOCAIS); fora da loja, o checklist não cobra
+    subir: null,                          // { em } quando pedem ao Motorista para subir este carro
     localPor: '', localVolta: '',         // quem autorizou a saída e a previsão de volta
     fase: 1, concluido: {},               // concluido[chaveItem] = { data, por }
     fasesDatas: {},                       // fasesDatas[n] = { previsto, realizado }

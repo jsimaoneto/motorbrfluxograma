@@ -407,6 +407,20 @@ function novoVeiculo() {
   avisar('Veículo criado. Preencha a ficha abaixo.');
 }
 
+// Pedido de subida: a ficha avisa o Motorista que este carro precisa subir.
+// O alerta aparece no fluxograma do Motorista (cargos.js) até ele dar baixa.
+function pedirSubir(id, marcado) {
+  const v = acharVeiculo(id);
+  if (!v) return;
+  v.subir = marcado ? { em: new Date().toISOString() } : null;
+  salvarVeiculo(v);
+  avisar(marcado ? 'Motorista avisado: subir este veículo.' : 'Pedido de subida cancelado.');
+  desenhar();
+}
+
+const quandoBR = (iso) => new Date(iso).toLocaleString('pt-BR',
+  { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+
 function telaVeiculo() {
   const v = acharVeiculo(estado.veiculoId);
   if (!v) return ir('veiculos');
@@ -434,6 +448,12 @@ function telaVeiculo() {
           <div style="font-size:30px;font-weight:700;line-height:1">${p.pct}%</div>
           <div style="font-size:11.5px;color:var(--texto-fraco)">${p.feitos} de ${p.total} itens</div>
         </div>
+        <label class="pede-subir ${v.subir ? 'ativo' : ''}">
+          <input type="checkbox" ${v.subir ? 'checked' : ''} onchange="pedirSubir('${v.id}',this.checked)">
+          <span><b>Subir veículo</b><br>${v.subir
+            ? 'Pedido ao Motorista em ' + esc(quandoBR(v.subir.em))
+            : 'Marque para avisar o Motorista que este carro precisa subir'}</span>
+        </label>
       </div>
     </div>
     <div class="abas">${abas.map(([id, nome]) =>

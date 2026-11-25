@@ -79,10 +79,12 @@ function telaFluxogramas() {
   const c = acharCargo(estado.cargo);
   topo(c ? c.nome : 'Fluxograma geral', c ? 'O que é responsabilidade deste cargo e o que ele tem para fazer agora'
     : 'O que cada cargo está fazendo e em que fase está cada veículo', '');
+  const subir = pedidosDeSubida().length;
   const abas = [['', 'Geral']].concat(CARGOS.map((x) => [x.id, x.curto]));
   $('#pagina').innerHTML = `
     <div class="abas">${abas.map(([id, nome]) =>
-      `<button class="${(estado.cargo || '') === id ? 'ativo' : ''}" onclick="ir('fluxogramas',{cargo:'${id}'})">${esc(nome)}</button>`).join('')}</div>
+      `<button class="${(estado.cargo || '') === id ? 'ativo' : ''}" onclick="ir('fluxogramas',{cargo:'${id}'})">${esc(nome)}${
+        id === 'motorista' && subir ? `<b class="bolha">${subir}</b>` : ''}</button>`).join('')}</div>
     <div id="conteudo-aba"></div>`;
   if (c) abaCargo(c); else abaGeral();
 }
@@ -162,6 +164,23 @@ function abaGeral() {
     </div>`;
 }
 
+// ---------------------------------------------------------------- pedidos de subida
+// Quem cuida da ficha marca "Subir veículo"; o aviso cai aqui, no fluxograma do Motorista.
+const pedidosDeSubida = () => dados().veiculos.filter((v) => v.subir);
+
+function alertaSubir() {
+  const ps = pedidosDeSubida();
+  if (!ps.length) return '';
+  return `<div class="alerta-funcao">
+    <div class="af-cab">${ic.subir} ${ps.length === 1 ? 'Um veículo precisa subir' : ps.length + ' veículos precisam subir'}</div>
+    ${ps.map((v) => `<div class="af-linha">
+      <div><b>${esc(nomeVeiculo(v))}</b>${v.placa ? ' · ' + esc(v.placa) : ''}
+        <span class="fraco">pedido em ${esc(quandoBR(v.subir.em))} · está em ${esc(localDoV(v))}</span></div>
+      <button class="btn" onclick="pedirSubir('${v.id}',false)">Já subi</button>
+    </div>`).join('')}
+  </div>`;
+}
+
 function abaCargo(c) {
   const meus = itensProcesso().filter((x) => x.cargos.includes(c.id));
   const fasesComItens = FASES.filter((f) => meus.some((x) => x.f.n === f.n));
@@ -169,6 +188,7 @@ function abaCargo(c) {
   const vs = emAndamento();
   const filtro = estado.cargoVeiculo && acharVeiculo(estado.cargoVeiculo) ? estado.cargoVeiculo : '';
   const agoraTotal = vs.reduce((s, v) => s + pendentesAgora(v, c.id).length, 0);
+  const alerta = c.id === 'motorista' ? alertaSubir() : '';
 
   const itemHtml = (v, x) => {
     const m = v.concluido[x.k];
@@ -203,7 +223,7 @@ function abaCargo(c) {
     }).join('') : '<p class="fraco">Nenhuma tarefa deste cargo na fase atual dos veículos. Tudo em dia.</p>';
   }
 
-  $('#conteudo-aba').innerHTML = `
+  $('#conteudo-aba').innerHTML = alerta + `
     <div class="indicadores">
       <div class="indicador destaque"><div class="n">${agoraTotal}</div><div class="r">tarefas agora</div></div>
       <div class="indicador"><div class="n">${meus.length}</div><div class="r">itens sob responsabilidade</div></div>

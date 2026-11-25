@@ -688,3 +688,4 @@ body { color: #333; }
   background: var(--laranja); color: #fff; border-radius: 9px; font-size: 11px; line-height: 17px; text-align: center;
 }
 .abas button.ativo .bolha { background: var(--laranja-escuro); }
+.item-ck .hora { color: var(--laranja-escuro); font-variant-numeric: tabular-nums; }

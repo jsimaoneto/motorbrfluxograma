@@ -414,7 +414,7 @@ function pedirSubir(id, marcado) {
   if (!v) return;
   v.subir = marcado ? { em: new Date().toISOString() } : null;
   salvarVeiculo(v);
-  avisar(marcado ? 'Motorista avisado: subir este veículo.' : 'Pedido de subida cancelado.');
+  avisar(marcado ? 'Motorista avisado: subir este veículo.' : 'Pedido de subida encerrado.');
   desenhar();
 }
 

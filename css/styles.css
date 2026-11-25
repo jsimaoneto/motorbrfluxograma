@@ -651,3 +651,12 @@ body { color: #333; }
            border-radius: 50%; background: var(--laranja); color: #fff; font-size: 11px; font-weight: 600; flex: none; }
 .btn.reprovado { background: var(--vermelho); border-color: var(--vermelho); color: #fff; }
 .btn.reprovado:hover { background: #a82c23; border-color: #a82c23; }
+
+/* ------------------------------------------------------- caixa "Para hoje" */
+.aviso-topo {
+  background: var(--laranja-claro); border-left: 3px solid var(--laranja);
+  padding: 12px 14px; border-radius: 0 var(--raio-p) var(--raio-p) 0;
+  font-size: 13px; color: var(--texto); margin-bottom: 14px;
+}
+.item-ck.atrasado { background: var(--vermelho-claro); border-radius: var(--raio-p); }
+.marca-em.ruim { color: var(--vermelho); font-weight: 600; }

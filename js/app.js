@@ -9,6 +9,7 @@ const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julh
 const MES_CURTO = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
 
 const ic = {
+  hoje: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
   painel: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>',
   carro: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M3 12l2-5a2 2 0 0 1 2-1h10a2 2 0 0 1 2 1l2 5v4a1 1 0 0 1-1 1h-1a2 2 0 0 1-4 0H9a2 2 0 0 1-4 0H4a1 1 0 0 1-1-1v-4z"/><circle cx="7.5" cy="16.5" r="1.5"/><circle cx="16.5" cy="16.5" r="1.5"/></svg>',
   gente: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>',
@@ -107,6 +108,7 @@ function entrar() {
 // ---------------------------------------------------------------- navegação
 const PAGINAS = [
   { id: 'painel', nome: 'Painel', icone: 'painel' },
+  { id: 'hoje', nome: 'Para hoje', icone: 'hoje' },
   { id: 'veiculos', nome: 'Veículos', icone: 'carro' },
   { id: 'fluxogramas', nome: 'Fluxogramas', icone: 'fluxo' },
   { id: 'dashboard', nome: 'Dashboard', icone: 'grafico' },
@@ -138,7 +140,7 @@ function ir(pagina, extra) {
 
 function desenhar() {
   const telas = {
-    painel: telaPainel, veiculos: telaVeiculos, veiculo: telaVeiculo,
+    painel: telaPainel, hoje: telaHoje, veiculos: telaVeiculos, veiculo: telaVeiculo,
     clientes: telaClientes, cliente: telaCliente, agenda: telaAgenda,
     processo: telaProcesso, checklists: telaChecklists, dados: telaDados,
     fluxogramas: telaFluxogramas, dashboard: telaDashboard,

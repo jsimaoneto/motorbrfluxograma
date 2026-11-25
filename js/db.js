@@ -12,6 +12,7 @@ const vazio = () => ({
   veiculos: [],
   clientes: [],
   eventos: [],      // agenda: compromissos criados à mão ou vindos do checklist
+  rotinas: {},      // itens recorrentes do eixo "pessoa" (reporte diário, mesa redonda, relatório mensal)
   config: { loja: '+Motor BR', atualizado: null },
 });
 
